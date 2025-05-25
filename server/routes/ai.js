@@ -1,35 +1,50 @@
 const express = require("express");
 const router = express.Router();
+const OpenAI = require("openai");
 require("dotenv").config();
 
-const OpenAI = require("openai");
-
+// Initialize OpenAI
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// POST /api/ai/ask
 router.post("/ask", async (req, res) => {
   const { prompt } = req.body;
 
+  if (!prompt || prompt.trim() === "") {
+    return res.status(400).json({ error: "Prompt is required." });
+  }
+
   try {
-    const response = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
           content:
-            "You are a compassionate, direct, and honest workplace advisor giving grounded, employee-focused advice on HR, retaliation, discrimination, and career concerns.",
+            "You are a compassionate, honest workplace advisor who provides employee-centered guidance on career and HR issues including retaliation, harassment, documentation, and professional next steps.",
         },
-        { role: "user", content: prompt },
+        {
+          role: "user",
+          content: prompt,
+        },
       ],
-      max_tokens: 500,
       temperature: 0.7,
+      max_tokens: 500,
     });
 
-    res.json({ reply: response.data.choices[0].message.content });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Something went wrong." });
+    const reply = completion.choices?.[0]?.message?.content;
+
+    if (!reply) {
+      return res.status(500).json({ error: "No reply generated." });
+    }
+
+    console.log("AI Reply:", reply); // For debugging in Render logs
+    res.json({ reply });
+  } catch (error) {
+    console.error("OpenAI Error:", error.message);
+    res.status(500).json({ error: "AI request failed." });
   }
 });
 
