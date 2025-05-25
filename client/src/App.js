@@ -17,17 +17,22 @@ function App() {
 
   // Sign in with Google
   const handleSignIn = async () => {
-    const result = await signIn();
-    setUser(result.user);
+    try {
+      const result = await signIn();
+      setUser(result.user);
 
-    const userRef = doc(db, "users", result.user.uid);
-    const userSnap = await getDoc(userRef);
+      const userRef = doc(db, "users", result.user.uid);
+      const userSnap = await getDoc(userRef);
 
-    if (!userSnap.exists()) {
-      await setDoc(userRef, { credits: 3 });
-      setCredits(3);
-    } else {
-      setCredits(userSnap.data().credits);
+      if (!userSnap.exists()) {
+        await setDoc(userRef, { credits: 3 });
+        setCredits(3);
+      } else {
+        setCredits(userSnap.data().credits);
+      }
+    } catch (error) {
+      alert("Sign-in failed. Please try again.");
+      console.error(error);
     }
   };
 
@@ -46,7 +51,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Handle form submit with credit check + deduction
+  // Handle AI advice form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -79,7 +84,6 @@ function App() {
       const data = await res.json();
       setResponse(data.reply || "No response received.");
 
-      // Deduct 1 credit
       const newCredits = userSnap.data().credits - 1;
       await updateDoc(userRef, { credits: newCredits });
       setCredits(newCredits);
@@ -96,42 +100,47 @@ function App() {
         <img src="/logo.png" alt="MyZolve Logo" className="logo" />
 
         {!user ? (
-          <button onClick={handleSignIn} className="signin-btn">
-            Sign in with Google
-          </button>
+          <>
+            <button onClick={handleSignIn} className="signin-btn">
+              Sign in with Google
+            </button>
+            <p className="not-signed-in-msg">You must sign in to access AI advice.</p>
+          </>
         ) : (
-          <p style={{ marginBottom: "1rem" }}>
-            You have <strong>{credits}</strong> credit{credits !== 1 && "s"} left.
-          </p>
-        )}
+          <>
+            <p className="credit-msg">
+              You have <strong>{credits}</strong> credit{credits !== 1 && "s"} left.
+            </p>
 
-        <form onSubmit={handleSubmit} className="form">
-          <textarea
-            placeholder="What’s going on at work?"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            required
-            disabled={credits <= 0}
-          />
-          <button type="submit" disabled={credits <= 0 || loading}>
-            {loading ? "Thinking..." : "Get Advice"}
-          </button>
-        </form>
+            <form onSubmit={handleSubmit} className="form">
+              <textarea
+                placeholder="What’s going on at work?"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                required
+                disabled={credits <= 0}
+              />
+              <button type="submit" disabled={credits <= 0 || loading}>
+                {loading ? "Thinking..." : "Get Advice"}
+              </button>
+            </form>
 
-        {credits === 0 && (
-          <p className="buy-more">
-            You’re out of credits.{" "}
-            <a href="#!" onClick={() => alert("Stripe integration coming soon!")}>
-              Buy more credits
-            </a>
-          </p>
-        )}
+            {credits === 0 && (
+              <p className="buy-more">
+                You’re out of credits.{" "}
+                <a href="#!" onClick={() => alert("Stripe integration coming soon!")}>
+                  Buy more credits
+                </a>
+              </p>
+            )}
 
-        {response && (
-          <div className="responseBox">
-            <strong>Advice:</strong>
-            <p>{response}</p>
-          </div>
+            {response && (
+              <div className="responseBox">
+                <strong>Advice:</strong>
+                <p>{response}</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
