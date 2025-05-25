@@ -1,5 +1,70 @@
+/* App.css */
+
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(270deg, #663399, #339989, #fff5f9);
+  background-size: 600% 600%;
+  animation: gradientShift 15s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+}
+
+textarea,
+button {
+  font-family: inherit;
+}
+
+textarea {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 1rem;
+  font-size: 1rem;
+  resize: vertical;
+}
+
+button {
+  background-color: #663399;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+button:hover {
+  background-color: #4e2674;
+  box-shadow: 0 0 10px rgba(102, 51, 153, 0.4);
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 1rem;
+  }
+
+  textarea {
+    font-size: 0.95rem;
+  }
+
+  button {
+    font-size: 0.95rem;
+    padding: 0.6rem 0.8rem;
+  }
 }
