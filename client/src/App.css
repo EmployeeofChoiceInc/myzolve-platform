@@ -1,70 +1,86 @@
-/* App.css */
-
 @keyframes gradientShift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-body {
+body, html {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(270deg, #663399, #339989, #fff5f9);
+  min-height: 100vh;
+}
+
+.gradientBg {
+  background: linear-gradient(270deg, #003366, #009DFF, #E6F5FF);
   background-size: 600% 600%;
-  animation: gradientShift 15s ease infinite;
+  animation: gradientShift 16s ease infinite;
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #333;
+  padding: 1rem;
 }
 
-textarea,
-button {
-  font-family: inherit;
+.container {
+  background: #ffffffee;
+  max-width: 500px;
+  width: 100%;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.logo {
+  max-width: 280px;
+  margin-bottom: 2rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 textarea {
-  border: 1px solid #ccc;
   border-radius: 10px;
   padding: 1rem;
   font-size: 1rem;
+  border: 1px solid #ccc;
   resize: vertical;
+  min-height: 100px;
 }
 
 button {
-  background-color: #663399;
+  background-color: #007ACC;
   color: white;
   border: none;
-  border-radius: 10px;
   padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: background 0.3s;
 }
 
 button:hover {
-  background-color: #4e2674;
-  box-shadow: 0 0 10px rgba(102, 51, 153, 0.4);
+  background-color: #005B99;
+}
+
+.responseBox {
+  margin-top: 2rem;
+  background: #f1f9ff;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: left;
 }
 
 @media (max-width: 600px) {
-  body {
-    padding: 1rem;
+  .container {
+    padding: 1.25rem;
   }
 
-  textarea {
+  textarea, button {
     font-size: 0.95rem;
-  }
-
-  button {
-    font-size: 0.95rem;
-    padding: 0.6rem 0.8rem;
   }
 }
