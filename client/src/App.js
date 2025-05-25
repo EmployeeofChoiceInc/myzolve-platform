@@ -1,15 +1,71 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
+import { auth, signIn, db } from "./firebase";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 function App() {
   const [prompt, setPrompt] = useState("");
   const [response, setResponse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [credits, setCredits] = useState(0);
 
+  // Sign in with Google
+  const handleSignIn = async () => {
+    const result = await signIn();
+    setUser(result.user);
+
+    const userRef = doc(db, "users", result.user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, { credits: 3 });
+      setCredits(3);
+    } else {
+      setCredits(userSnap.data().credits);
+    }
+  };
+
+  // Watch for sign-in on load
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        const userRef = doc(db, "users", firebaseUser.uid);
+        const userSnap = await getDoc(userRef);
+        if (userSnap.exists()) {
+          setCredits(userSnap.data().credits);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Handle form submit with credit check + deduction
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setResponse("");
+
+    if (!user) {
+      alert("Please sign in to continue.");
+      setLoading(false);
+      return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists() || userSnap.data().credits <= 0) {
+      alert("You’re out of credits. Please buy more to continue.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const res = await fetch("https://myzolve-api.onrender.com/api/ai/ask", {
@@ -22,6 +78,11 @@ function App() {
 
       const data = await res.json();
       setResponse(data.reply || "No response received.");
+
+      // Deduct 1 credit
+      const newCredits = userSnap.data().credits - 1;
+      await updateDoc(userRef, { credits: newCredits });
+      setCredits(newCredits);
     } catch (error) {
       setResponse("Something went wrong. Please try again.");
     }
@@ -34,17 +95,37 @@ function App() {
       <div className="container">
         <img src="/logo.png" alt="MyZolve Logo" className="logo" />
 
+        {!user ? (
+          <button onClick={handleSignIn} className="signin-btn">
+            Sign in with Google
+          </button>
+        ) : (
+          <p style={{ marginBottom: "1rem" }}>
+            You have <strong>{credits}</strong> credit{credits !== 1 && "s"} left.
+          </p>
+        )}
+
         <form onSubmit={handleSubmit} className="form">
           <textarea
             placeholder="What’s going on at work?"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             required
+            disabled={credits <= 0}
           />
-          <button type="submit">
+          <button type="submit" disabled={credits <= 0 || loading}>
             {loading ? "Thinking..." : "Get Advice"}
           </button>
         </form>
+
+        {credits === 0 && (
+          <p className="buy-more">
+            You’re out of credits.{" "}
+            <a href="#!" onClick={() => alert("Stripe integration coming soon!")}>
+              Buy more credits
+            </a>
+          </p>
+        )}
 
         {response && (
           <div className="responseBox">
