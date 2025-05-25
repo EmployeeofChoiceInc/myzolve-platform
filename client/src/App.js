@@ -11,7 +11,7 @@ function App() {
     setResponse("");
 
     try {
-      const res = await fetch("/api/ai/ask", {
+      const res = await fetch("https://myzolve-api.onrender.com/api/ai/ask", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
