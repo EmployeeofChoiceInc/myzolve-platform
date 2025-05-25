@@ -5,6 +5,7 @@
     "start": "react-scripts start"
   },
   "dependencies": {
+    "firebase": "^11.8.1",
     "react-dom": "^19.1.0",
     "react-scripts": "^5.0.1"
   },
