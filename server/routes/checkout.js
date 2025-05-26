@@ -21,10 +21,10 @@ router.post("/create-checkout-session", async (req, res) => {
       cancel_url: "https://myzolve-platform.vercel.app?canceled=true",
     });
 
-    res.json({ url: session.url });
+   res.json({ url: session.url });
   } catch (error) {
-    console.error("Checkout error:", error);
-    res.status(500).json({ error: "Unable to create session" });
+    console.error("Stripe error:", error);
+    res.status(500).json({ error: "Stripe session creation failed" });
   }
 });
 
