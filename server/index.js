@@ -1,5 +1,13 @@
 const express = require("express");
 const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "https://myzolve-platform.vercel.app", // <-- This is critical
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 const app = express();
 const PORT = process.env.PORT || 10000;
 
