@@ -7,7 +7,12 @@ require("dotenv").config();
 const aiRoutes = require("./routes/ai");
 const checkoutRoutes = require("./routes/checkout");
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://myzolve-platform.vercel.app", // 👈 your Vercel domain
+  methods: ["GET", "POST"],
+  credentials: true,
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/ai", aiRoutes);
