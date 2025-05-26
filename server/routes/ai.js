@@ -3,7 +3,7 @@ const router = express.Router();
 const OpenAI = require("openai");
 require("dotenv").config();
 
-// Initialize OpenAI
+// Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -22,8 +22,7 @@ router.post("/ask", async (req, res) => {
       messages: [
         {
           role: "system",
-          content:
-            "You are a compassionate, honest workplace advisor who provides employee-centered guidance on career and HR issues including retaliation, harassment, documentation, and professional next steps.",
+          content: "You are a compassionate, honest workplace advisor who provides employee-centered guidance on career and HR issues including retaliation, harassment, documentation, and professional next steps.",
         },
         {
           role: "user",
@@ -40,11 +39,10 @@ router.post("/ask", async (req, res) => {
       return res.status(500).json({ error: "No reply generated." });
     }
 
-    console.log("AI Reply:", reply); // For debugging in Render logs
-    res.json({ reply });
+    res.status(200).json({ reply });
   } catch (error) {
-    console.error("OpenAI Error:", error.message);
-    res.status(500).json({ error: "AI request failed." });
+    console.error("OpenAI API Error:", error.message);
+    res.status(500).json({ error: "Failed to fetch AI response." });
   }
 });
 
