@@ -91,6 +91,18 @@ function App() {
     setLoading(false);
   };
 
+  const handleBuyCredits = async () => {
+    try {
+      const res = await fetch("https://myzolve-api.onrender.com/api/checkout/create-checkout-session", {
+        method: "POST",
+      });
+      const data = await res.json();
+      window.location.href = data.url;
+    } catch (error) {
+      alert("Unable to redirect to Stripe checkout.");
+    }
+  };
+
   return (
     <div className="gradientBg">
       <div className="container">
@@ -125,7 +137,7 @@ function App() {
             {credits === 0 && (
               <p className="buy-more">
                 You’re out of credits. {" "}
-                <a href="#" onClick={() => alert("Stripe integration coming soon!")}>Buy more credits</a>
+                <button onClick={handleBuyCredits}>Buy more credits</button>
               </p>
             )}
 
@@ -143,3 +155,4 @@ function App() {
 }
 
 export default App;
+
