@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config(); // Load env variables
+require("dotenv").config(); // ✅ Keep this above app
 
-const app = express(); // 🟢 Must come before app.use
+const app = express(); // ✅ MUST be before any app.use()
 
 // Middleware
 app.use(cors());
@@ -15,6 +15,7 @@ const checkoutRoutes = require("./routes/checkout");
 app.use("/api/ai", aiRoutes);
 app.use("/api/checkout", checkoutRoutes);
 
+// Health check
 app.get("/", (req, res) => res.send("MyZolve API is running."));
 
 const PORT = process.env.PORT || 10000;
